@@ -5,8 +5,12 @@
 
 
 
-package Config::YAARG 0.021;
+package Config::YAARG;
 use base qw( Exporter );
+
+
+
+our $VERSION = '0.023';
 
 
 
@@ -70,9 +74,12 @@ sub ARGS {
     my $names = $config->{names};
     return unless ($names);
 
+    my @names = @$names;
+    s/=.*?$// foreach(@$names);
+
     my %args = ();
     Getopt::Long::GetOptions(\%args,
-        map { !/=/ ? "$_=s" : $_ } @$names);
+        map { (!s/=b$// and !/=/) ? "$_=s" : $_ } @names);
     return %{ProcessArgs(__PACKAGE__, $config, %args)};
 }
 
